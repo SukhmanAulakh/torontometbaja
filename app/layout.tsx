@@ -5,16 +5,15 @@ import clsx from "clsx";
 
 import { Providers } from "./providers";
 
-import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    default: "Toronto MET Baja SAE",
+    template: "%s | Toronto MET Baja SAE",
   },
-  description: siteConfig.description,
+  description: "Toronto Metropolitan University's Baja SAE Team",
   icons: {
     icon: "/favicon.ico",
   },
