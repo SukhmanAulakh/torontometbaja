@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect} from "react";
 import { Navbar as HeroUINavbar,
   NavbarContent, 
   NavbarMenu, 
@@ -19,11 +19,11 @@ import {
   InstagramIcon,
   LinkedInIcon,
   DiscordIcon,
-  PackageIcon,
 } from "@/components/icons";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [selectedPage, setSelectedPage] = React.useState("Home");
 
   const menuItems = [
     { label: "Home", href: "/" },
@@ -48,29 +48,55 @@ export const Navbar = () => {
           className="md:hidden"
         />
         <NavbarBrand>
-          <NextLink href="/" className="flex items-center gap-2">
+          <NextLink href="/" className="flex items-center gap-2"
+            onClick={()=>setSelectedPage("Home")}
+          >
             <img src="/favicon.ico" alt="TMU Baja Logo" width={32} height={32} />
             <p className="font-bold text-inherit">TMU Baja</p>
           </NextLink>
         </NavbarBrand>
         <div className="hidden md:flex gap-6 ml-6">
           <NavbarItem>
-            <Link color="foreground" href="/about">
+            <Link color={
+                ("About" == selectedPage)
+                  ? "danger"
+                  : "foreground"
+              } href="/about"
+              onClick={()=>setSelectedPage("About")}  
+            >
               About Us
             </Link>
           </NavbarItem>
-          <NavbarItem isActive>
-            <Link aria-current="page" href="/gallery">
+          <NavbarItem>
+            <Link color={
+                ("Gallery" == selectedPage)
+                  ? "danger"
+                  : "foreground"
+              } href="/gallery"
+              onClick={()=>setSelectedPage("Gallery")}
+            >
               Gallery
             </Link>
           </NavbarItem>
           <NavbarItem>
-            <Link color="foreground" href="/sponsors">
+            <Link color={
+                ("Sponsorships" == selectedPage)
+                  ? "danger"
+                  : "foreground"
+              } href="/sponsors"
+              onClick={()=>setSelectedPage("Sponsorships")}
+            >
               Sponsorships
             </Link>
           </NavbarItem>
           <NavbarItem>
-            <Link color="foreground" href="/team">
+            <Link color={
+                ("Our Team" == selectedPage)
+                  ? "danger"
+                  : "foreground"
+              } href="/team"
+              onClick={()=>setSelectedPage("Our Team")}
+            >
               Our Team
             </Link>
           </NavbarItem>
@@ -153,12 +179,14 @@ export const Navbar = () => {
           <NavbarMenuItem key={item.label + index}>
             <Link
               className="w-full"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={() => {
+                setIsMenuOpen(false);
+                setSelectedPage(item.label);}}
               color={
-                index === 2
-                  ? "primary"
-                  : index === menuItems.length - 1
+                (item.label == selectedPage)
                   ? "danger"
+                  : index === menuItems.length - 1
+                  ? "primary"
                   : "foreground"
               }
               href={item.href || "#"}
