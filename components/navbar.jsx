@@ -171,6 +171,7 @@ export const Navbar = () => {
           >
             <LinkedInIcon className="text-default-500" />
           </Link>
+          <ThemeSwitch />
       </NavbarContent>
 
       {/* Mobile Menu Drawer */}

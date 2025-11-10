@@ -1,3 +1,13 @@
+import { Metadata} from "next";
+
+export const metadata: Metadata = {
+  title: "Gallery",
+  description: "Toronto Metropolitan University's Baja SAE's Video and Photo Gallery",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
 export default function GalleryLayout({
   children,
 }: {

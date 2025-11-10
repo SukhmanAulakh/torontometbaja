@@ -1,3 +1,13 @@
+import { Metadata} from "next";
+
+export const metadata: Metadata = {
+  title: "Sponsorships",
+  description: "Toronto Metropolitan University's Baja SAE's Sponsors and Sponsorship Information",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
 export default function SponsorsLayout({
   children,
 }: {

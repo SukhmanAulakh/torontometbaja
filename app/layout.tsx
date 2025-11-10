@@ -10,8 +10,8 @@ import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
   title: {
-    default: "Toronto MET Baja SAE",
-    template: "%s | Toronto MET Baja SAE",
+    default: "TMU Baja Racing",
+    template: "%s | TMU Baja Racing",
   },
   description: "Toronto Metropolitan University's Baja SAE Team",
   icons: {

@@ -1,3 +1,13 @@
+import { Metadata} from "next";
+
+export const metadata: Metadata = {
+  title: "Our Team",
+  description: "Toronto Metropolitan University's Baja SAE's Team Page and List Of Executive Members",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
 export default function TeamLayout({
   children,
 }: {
