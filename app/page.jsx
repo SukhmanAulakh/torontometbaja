@@ -1,7 +1,10 @@
+"use client";
+
 import { Link } from "@heroui/link";
 import { Snippet } from "@heroui/snippet";
 import { Code } from "@heroui/code";
 import { button as buttonStyles } from "@heroui/theme";
+import Image from "next/image";
 
 import { title, subtitle } from "@/components/primitives";
 import { LinkedInIcon } from "@/components/icons";
@@ -20,7 +23,7 @@ export default function Home() {
           Beautiful, fast and modern React UI library.
         </div>
       </div>
-
+      
       <div className="flex gap-3">
         <Link
           isExternal

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     default: "TMU Baja Racing",
     template: "%s | TMU Baja Racing",
   },
-  description: "Toronto Metropolitan University's Baja SAE Team",
+  description: "Toronto Metropolitan University's Baja SAE's Official Website",
   icons: {
     icon: "/favicon.ico",
   },
