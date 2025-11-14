@@ -1,3 +1,15 @@
 @import "tailwindcss";
 
-@config "../tailwind.config.js"
+@config "../tailwind.config.js";
+
+.bannerImg {
+  width: max-content;
+  height: max-content;
+  max-height: 120px;
+}
+
+@media (min-width: 1024px) {
+  .bannerImg {
+    max-height: 200px;
+  }
+}
