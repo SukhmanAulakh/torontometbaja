@@ -1,13 +1,21 @@
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const pageToken = searchParams.get('nextPageToken') || "";
+  const PAGE_SIZE = 30;
+
   const API_KEY = "AIzaSyC8Pa3VIND-M1hZ0A2IuXSjtFSiR_KHb5g";
   const FOLDER_ID = "1dIWdibCp8ulxcnxOs9CShchW0_WxtfSP";
 
   // URL to list files in the specific folder
-  // We request 'files(id, name, thumbnailLink)'
-  // We will transform thumbnailLink to get a higher quality image
-  const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}' in parents and trashed=false and (mimeType='image/png' or mimeType='image/jpeg' or mimeType='image/jpg')&key=${API_KEY}&fields=files(id,name,thumbnailLink)`;
+  // Query changed to "mimeType contains 'image/'" to include HEIC, WebP, etc.
+  // Added orderBy to ensure consistent ordering (Newest first)
+  let url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}' in parents and trashed=false and mimeType contains 'image/'&key=${API_KEY}&fields=nextPageToken,files(id,name,thumbnailLink)&pageSize=${PAGE_SIZE}&orderBy=createdTime desc`;
+
+  if (pageToken) {
+    url += `&pageToken=${pageToken}`;
+  }
 
   try {
     const response = await fetch(url);
@@ -16,26 +24,27 @@ export async function GET() {
     }
     const data = await response.json();
     const files = data.files || [];
+    const nextPageToken = data.nextPageToken || null;
 
     // Map to our gallery format
     const images = files.map((file: any) => {
-      // TRICK: Google Drive thumbnailLinks usually end with '=s220' (size 220). 
-      // We can strip this or change it to '=s1000' or similar to get a high-res version.
-      // Stripping it usually gives the original size (or a very large preview).
       let src = file.thumbnailLink;
+      // TRICK: Instead of using the original file (which might be HEIC), we request a huge thumbnail.
+      // Google Drive generates JPEG thumbnails for HEIC files.
+      // replacing with '=s2048' ensures high quality and format compatibility.
       if (src && src.includes('=')) {
-        src = src.split('=')[0];
+        src = src.replace(/=s\d+$/, '=s2048');
       }
 
       return {
         id: file.id,
         src: src,
         alt: file.name,
-        caption: "" // No specific caption in Drive metadata usually, leaving blank or name
+        caption: ""
       };
     });
 
-    return NextResponse.json(images);
+    return NextResponse.json({ images, nextPageToken });
 
   } catch (error) {
     console.error("Error fetching from Google Drive:", error);

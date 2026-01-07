@@ -11,17 +11,24 @@ import { Button } from "@heroui/button";
 export default function GalleryPage() {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [nextPageToken, setNextPageToken] = useState(null);
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+    // Lightbox State
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
 
+    // Initial load
     useEffect(() => {
-        // Fetch images from our internal API
-        const fetchImages = async () => {
+        const fetchInitialImages = async () => {
             try {
                 const res = await fetch('/api/gallery');
                 const data = await res.json();
-                setImages(data);
+                if (data.images) {
+                    setImages(data.images);
+                    setNextPageToken(data.nextPageToken);
+                }
             } catch (error) {
                 console.error("Failed to fetch gallery images", error);
             } finally {
@@ -29,8 +36,47 @@ export default function GalleryPage() {
             }
         };
 
-        fetchImages();
+        fetchInitialImages();
     }, []);
+
+    // Fetch more images
+    const loadMoreImages = useCallback(async () => {
+        if (!nextPageToken || isFetchingMore) return;
+
+        setIsFetchingMore(true);
+        try {
+            const res = await fetch(`/api/gallery?nextPageToken=${nextPageToken}`);
+            const data = await res.json();
+
+            if (data.images) {
+                setImages(prev => [...prev, ...data.images]);
+                setNextPageToken(data.nextPageToken);
+            }
+        } catch (error) {
+            console.error("Failed to load more images", error);
+        } finally {
+            setIsFetchingMore(false);
+        }
+    }, [nextPageToken, isFetchingMore]);
+
+    // Intersection Observer for Infinite Scroll
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            entries => {
+                if (entries[0].isIntersecting) {
+                    loadMoreImages();
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        const target = document.getElementById("load-more-trigger");
+        if (target) observer.observe(target);
+
+        return () => {
+            if (target) observer.unobserve(target);
+        };
+    }, [loadMoreImages]);
 
     const handleImageClick = (image, index) => {
         setSelectedImage(image);
@@ -87,29 +133,34 @@ export default function GalleryPage() {
                     <Spinner size="lg" label="Loading images..." />
                 </div>
             ) : (
-                /* Masonry Layout using CSS Columns to preserve aspect ratios */
-                /* Updated Grid: Fewer columns (max 3) -> Larger images */
-                <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-                    {images.map((image, index) => (
-                        <div key={image.id} className="break-inside-avoid mb-4">
-                            <Card
-                                isPressable
-                                onPress={() => handleImageClick(image, index)}
-                                radius="lg"
-                                className="border-none w-full h-auto bg-transparent shadow-none"
-                            >
-                                <Image
-                                    alt={image.alt}
-                                    className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
-                                    src={image.src}
-                                    width="100%"
-                                    height="100%"
-                                    referrerPolicy="no-referrer"
-                                />
-                            </Card>
-                        </div>
-                    ))}
-                </div>
+                <>
+                    <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+                        {images.map((image, index) => (
+                            <div key={image.id} className="break-inside-avoid mb-4">
+                                <Card
+                                    isPressable
+                                    onPress={() => handleImageClick(image, index)}
+                                    radius="lg"
+                                    className="border-none w-full h-auto bg-transparent shadow-none"
+                                >
+                                    <Image
+                                        alt={image.alt}
+                                        className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
+                                        src={image.src}
+                                        width="100%"
+                                        height="100%"
+                                        referrerPolicy="no-referrer"
+                                        loading="lazy"
+                                    />
+                                </Card>
+                            </div>
+                        ))}
+                    </div>
+                    {/* Trigger element for Infinite Scroll */}
+                    <div id="load-more-trigger" className="h-10 flex justify-center items-center w-full">
+                        {isFetchingMore && <Spinner size="sm" />}
+                    </div>
+                </>
             )}
 
             {/* Lightbox Modal */}
