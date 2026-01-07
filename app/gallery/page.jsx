@@ -13,11 +13,55 @@ export default function GalleryPage() {
     const [loading, setLoading] = useState(true);
     const [nextPageToken, setNextPageToken] = useState(null);
     const [isFetchingMore, setIsFetchingMore] = useState(false);
+    const [columns, setColumns] = useState({ col1: [], col2: [], col3: [] });
+    const [columnCount, setColumnCount] = useState(3);
 
     // Lightbox State
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
+
+    // Detect screen size and set column count
+    useEffect(() => {
+        const updateColumnCount = () => {
+            const width = window.innerWidth;
+            if (width < 640) {
+                setColumnCount(1);
+            } else if (width < 1024) {
+                setColumnCount(2);
+            } else {
+                setColumnCount(3);
+            }
+        };
+
+        updateColumnCount();
+        window.addEventListener('resize', updateColumnCount);
+        return () => window.removeEventListener('resize', updateColumnCount);
+    }, []);
+
+    // Distribute images across columns sequentially
+    const distributeImages = useCallback((imagesToDistribute, existingColumns, startIndex = 0) => {
+        const newColumns = { ...existingColumns };
+        const colKeys = ['col1', 'col2', 'col3'];
+
+        imagesToDistribute.forEach((image, idx) => {
+            const columnIndex = (startIndex + idx) % columnCount;
+            const colKey = colKeys[columnIndex];
+            if (newColumns[colKey]) {
+                newColumns[colKey] = [...newColumns[colKey], image];
+            }
+        });
+
+        return newColumns;
+    }, [columnCount]);
+
+    // Redistribute all images when column count changes
+    useEffect(() => {
+        if (images.length > 0) {
+            const newColumns = { col1: [], col2: [], col3: [] };
+            setColumns(distributeImages(images, newColumns, 0));
+        }
+    }, [columnCount, images, distributeImages]);
 
     // Initial load
     useEffect(() => {
@@ -134,27 +178,93 @@ export default function GalleryPage() {
                 </div>
             ) : (
                 <>
-                    <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-                        {images.map((image, index) => (
-                            <div key={image.id} className="break-inside-avoid mb-4">
-                                <Card
-                                    isPressable
-                                    onPress={() => handleImageClick(image, index)}
-                                    radius="lg"
-                                    className="border-none w-full h-auto bg-transparent shadow-none"
-                                >
-                                    <Image
-                                        alt={image.alt}
-                                        className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
-                                        src={image.src}
-                                        width="100%"
-                                        height="100%"
-                                        referrerPolicy="no-referrer"
-                                        loading="lazy"
-                                    />
-                                </Card>
+                    <div className="flex gap-4 w-full">
+                        {/* Column 1 */}
+                        {columnCount >= 1 && (
+                            <div className="flex-1 flex flex-col gap-4">
+                                {columns.col1.map((image) => {
+                                    const globalIndex = images.findIndex(img => img.id === image.id);
+                                    return (
+                                        <div key={image.id} className="break-inside-avoid">
+                                            <Card
+                                                isPressable
+                                                onPress={() => handleImageClick(image, globalIndex)}
+                                                radius="lg"
+                                                className="border-none w-full h-auto bg-transparent shadow-none"
+                                            >
+                                                <Image
+                                                    alt={image.alt}
+                                                    className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
+                                                    src={image.src}
+                                                    width="100%"
+                                                    height="100%"
+                                                    referrerPolicy="no-referrer"
+                                                    loading="lazy"
+                                                />
+                                            </Card>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        ))}
+                        )}
+
+                        {/* Column 2 */}
+                        {columnCount >= 2 && (
+                            <div className="flex-1 flex flex-col gap-4">
+                                {columns.col2.map((image) => {
+                                    const globalIndex = images.findIndex(img => img.id === image.id);
+                                    return (
+                                        <div key={image.id} className="break-inside-avoid">
+                                            <Card
+                                                isPressable
+                                                onPress={() => handleImageClick(image, globalIndex)}
+                                                radius="lg"
+                                                className="border-none w-full h-auto bg-transparent shadow-none"
+                                            >
+                                                <Image
+                                                    alt={image.alt}
+                                                    className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
+                                                    src={image.src}
+                                                    width="100%"
+                                                    height="100%"
+                                                    referrerPolicy="no-referrer"
+                                                    loading="lazy"
+                                                />
+                                            </Card>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {/* Column 3 */}
+                        {columnCount >= 3 && (
+                            <div className="flex-1 flex flex-col gap-4">
+                                {columns.col3.map((image) => {
+                                    const globalIndex = images.findIndex(img => img.id === image.id);
+                                    return (
+                                        <div key={image.id} className="break-inside-avoid">
+                                            <Card
+                                                isPressable
+                                                onPress={() => handleImageClick(image, globalIndex)}
+                                                radius="lg"
+                                                className="border-none w-full h-auto bg-transparent shadow-none"
+                                            >
+                                                <Image
+                                                    alt={image.alt}
+                                                    className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
+                                                    src={image.src}
+                                                    width="100%"
+                                                    height="100%"
+                                                    referrerPolicy="no-referrer"
+                                                    loading="lazy"
+                                                />
+                                            </Card>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                     {/* Trigger element for Infinite Scroll */}
                     <div id="load-more-trigger" className="h-10 flex justify-center items-center w-full">

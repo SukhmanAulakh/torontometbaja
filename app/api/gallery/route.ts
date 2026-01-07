@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const pageToken = searchParams.get('nextPageToken') || "";
-  const PAGE_SIZE = 30;
+  const PAGE_SIZE = 10;
 
   const API_KEY = "AIzaSyC8Pa3VIND-M1hZ0A2IuXSjtFSiR_KHb5g";
   const FOLDER_ID = "1dIWdibCp8ulxcnxOs9CShchW0_WxtfSP";
