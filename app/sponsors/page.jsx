@@ -1,7 +1,7 @@
 "use client";
 
 import { title } from "@/components/primitives";
-import { sponsors } from "@/config/demo-data";
+import { sponsors } from "@/config/data";
 import { Card, CardBody, CardFooter } from "@heroui/card";
 import { Image } from "@heroui/image";
 import { Chip } from "@heroui/chip";
@@ -44,20 +44,18 @@ export default function SponsorsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {tierSponsors.map((sponsor, index) => (
                   <Card shadow="sm" key={index} isPressable onPress={() => console.log("item pressed")}>
-                    <CardBody className="overflow-visible p-0 items-center justify-center">
+                    <div className="pt-2 px-4 flex-col items-start pb-0">
+                      <b className="text-small">{sponsor.name}</b>
+                    </div>
+                    <CardBody className="overflow-visible p-6 items-center justify-center">
                       <Image
-                        shadow="sm"
                         radius="lg"
                         width="100%"
                         alt={sponsor.name}
-                        className="w-full object-cover h-[200px]"
+                        className="w-full h-auto object-contain"
                         src={sponsor.logoUrl}
                       />
                     </CardBody>
-                    <CardFooter className="text-small justify-between">
-                      <b>{sponsor.name}</b>
-                      {/* <p className="text-default-500">{sponsor.tier}</p> */}
-                    </CardFooter>
                   </Card>
                 ))}
               </div>

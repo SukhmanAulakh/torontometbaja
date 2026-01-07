@@ -1,5 +1,5 @@
 import { title } from "@/components/primitives";
-import { aboutContent } from "@/config/demo-data";
+import { aboutContent } from "@/config/data";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 

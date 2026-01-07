@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useEffect} from "react";
-import { Navbar as HeroUINavbar,
-  NavbarContent, 
-  NavbarMenu, 
-  NavbarMenuToggle, 
-  NavbarBrand, 
-  NavbarItem, 
-  NavbarMenuItem, 
-} from "@heroui/navbar"; 
-import { Button } from "@heroui/button"; 
-import { Link } from "@heroui/link"; 
-import NextLink from "next/link"; 
+import React, { useEffect } from "react";
+import {
+  Navbar as HeroUINavbar,
+  NavbarContent,
+  NavbarMenu,
+  NavbarMenuToggle,
+  NavbarBrand,
+  NavbarItem,
+  NavbarMenuItem,
+} from "@heroui/navbar";
+import { Button } from "@heroui/button";
+import { Link } from "@heroui/link";
+import NextLink from "next/link";
 import Image from "next/image";
 
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -31,6 +32,7 @@ export const Navbar = () => {
     { label: "Gallery", href: "/gallery" },
     { label: "Our Team", href: "/team" },
     { label: "Sponsorships", href: "/sponsors" },
+    { label: "Join Us", href: "/join" },
     { label: "Contact Us", href: "/contact" },
   ];
 
@@ -38,7 +40,7 @@ export const Navbar = () => {
     <HeroUINavbar
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
-      maxWidth="xl"
+      maxWidth="2xl"
       position="sticky"
     >
       {/* Left Section (Logo + Links) */}
@@ -49,7 +51,7 @@ export const Navbar = () => {
         />
         <NavbarBrand>
           <NextLink href="/" className="flex items-center gap-2"
-            onClick={()=>setSelectedPage("Home")}
+            onClick={() => setSelectedPage("Home")}
           >
             <img src="/favicon.ico" alt="TMU Baja Logo" width={32} height={32} />
             <p className="font-bold text-inherit">TMU Baja</p>
@@ -58,46 +60,58 @@ export const Navbar = () => {
         <div className="hidden md:flex gap-6 ml-6">
           <NavbarItem>
             <Link color={
-                ("About" == selectedPage)
-                  ? "danger"
-                  : "foreground"
-              } href="/about"
-              onClick={()=>setSelectedPage("About")}  
+              ("About" == selectedPage)
+                ? "danger"
+                : "foreground"
+            } href="/about"
+              onClick={() => setSelectedPage("About")}
             >
               About Us
             </Link>
           </NavbarItem>
           <NavbarItem>
             <Link color={
-                ("Gallery" == selectedPage)
-                  ? "danger"
-                  : "foreground"
-              } href="/gallery"
-              onClick={()=>setSelectedPage("Gallery")}
+              ("Gallery" == selectedPage)
+                ? "danger"
+                : "foreground"
+            } href="/gallery"
+              onClick={() => setSelectedPage("Gallery")}
             >
               Gallery
             </Link>
           </NavbarItem>
           <NavbarItem>
             <Link color={
-                ("Sponsorships" == selectedPage)
-                  ? "danger"
-                  : "foreground"
-              } href="/sponsors"
-              onClick={()=>setSelectedPage("Sponsorships")}
+              ("Sponsorships" == selectedPage)
+                ? "danger"
+                : "foreground"
+            } href="/sponsors"
+              onClick={() => setSelectedPage("Sponsorships")}
             >
               Sponsorships
             </Link>
           </NavbarItem>
+
           <NavbarItem>
             <Link color={
-                ("Our Team" == selectedPage)
-                  ? "danger"
-                  : "foreground"
-              } href="/team"
-              onClick={()=>setSelectedPage("Our Team")}
+              ("Our Team" == selectedPage)
+                ? "danger"
+                : "foreground"
+            } href="/team"
+              onClick={() => setSelectedPage("Our Team")}
             >
               Our Team
+            </Link>
+          </NavbarItem>
+          <NavbarItem>
+            <Link color={
+              ("Join Us" == selectedPage)
+                ? "danger"
+                : "foreground"
+            } href="/join"
+              onClick={() => setSelectedPage("Join Us")}
+            >
+              Join Us
             </Link>
           </NavbarItem>
         </div>
@@ -135,12 +149,12 @@ export const Navbar = () => {
             color="primary"
             href={"https://117d6f55-42ba-4074-bf8f-ee72b3faa610.filesusr.com/ugd/0aae48_e4307ac78157459ba926a6fe9a025b69.pdf"}
             startContent={<Image
-                src={require("./TMUBaja-PixelArt.png")}
-                alt="TMU Baja Pixel Art"
-                width={24}
-                height={24}
-                style={{ borderRadius: 4 }}
-              />}
+              src={require("./TMUBaja-PixelArt.png")}
+              alt="TMU Baja Pixel Art"
+              width={24}
+              height={24}
+              style={{ borderRadius: 4 }}
+            />}
             variant="flat"
           >
             Sponsor Us
@@ -151,27 +165,27 @@ export const Navbar = () => {
       {/* Mobile Right Section */}
       <NavbarContent className="sm:hidden" justify="end">
         <Link
-            isExternal
-            aria-label="Instagram"
-            href={"https://www.instagram.com/torontometbaja/"}
-          >
-            <InstagramIcon className="text-default-500" />
-          </Link>
-          <Link
-            isExternal
-            aria-label="Discord"
-            href={"https://discord.com/invite/UVMvRb9VdV"}
-          >
-            <DiscordIcon className="text-default-500" />
-          </Link>
-          <Link
-            isExternal
-            aria-label="LinkedIn"
-            href={"https://www.linkedin.com/company/torontometbaja/"}
-          >
-            <LinkedInIcon className="text-default-500" />
-          </Link>
-          <ThemeSwitch />
+          isExternal
+          aria-label="Instagram"
+          href={"https://www.instagram.com/torontometbaja/"}
+        >
+          <InstagramIcon className="text-default-500" />
+        </Link>
+        <Link
+          isExternal
+          aria-label="Discord"
+          href={"https://discord.com/invite/UVMvRb9VdV"}
+        >
+          <DiscordIcon className="text-default-500" />
+        </Link>
+        <Link
+          isExternal
+          aria-label="LinkedIn"
+          href={"https://www.linkedin.com/company/torontometbaja/"}
+        >
+          <LinkedInIcon className="text-default-500" />
+        </Link>
+        <ThemeSwitch />
       </NavbarContent>
 
       {/* Mobile Menu Drawer */}
@@ -182,13 +196,14 @@ export const Navbar = () => {
               className="w-full"
               onClick={() => {
                 setIsMenuOpen(false);
-                setSelectedPage(item.label);}}
+                setSelectedPage(item.label);
+              }}
               color={
                 (item.label == selectedPage)
                   ? "danger"
                   : index === menuItems.length - 1
-                  ? "primary"
-                  : "foreground"
+                    ? "primary"
+                    : "foreground"
               }
               href={item.href || "#"}
               size="lg"
@@ -198,6 +213,6 @@ export const Navbar = () => {
           </NavbarMenuItem>
         ))}
       </NavbarMenu>
-    </HeroUINavbar>
+    </HeroUINavbar >
   );
 };
