@@ -19,6 +19,24 @@ export default function SponsorsPage() {
     }
   };
 
+  const getTierSize = (tier) => {
+    switch (tier) {
+      case "Platinum": return "max-w-md";
+      case "Gold": return "max-w-sm";
+      case "Silver": return "max-w-xs";
+      default: return "max-w-[200px]";
+    }
+  };
+
+  const getTierBackdrop = (tier) => {
+    switch (tier) {
+      case "Platinum": return "bg-gradient-to-br from-slate-100 to-blue-100 dark:from-slate-800 dark:to-blue-900";
+      case "Gold": return "bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-400 dark:to-yellow-600";
+      case "Silver": return "bg-gradient-to-br from-gray-100 to-slate-200 dark:from-gray-700 dark:to-slate-600";
+      default: return "bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900 dark:to-amber-800";
+    }
+  };
+
   return (
     <div className="flex flex-col gap-8 py-8 md:py-10">
       <div className="text-center">
@@ -41,9 +59,15 @@ export default function SponsorsPage() {
                 <div className="h-px bg-default-200 flex-1"></div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="flex flex-wrap justify-center gap-6">
                 {tierSponsors.map((sponsor, index) => (
-                  <Card shadow="sm" key={index} isPressable onPress={() => console.log("item pressed")}>
+                  <Card
+                    shadow="sm"
+                    key={index}
+                    isPressable
+                    onPress={() => window.open(sponsor.website, '_blank')}
+                    className={`${getTierSize(tier)} ${getTierBackdrop(tier)}`}
+                  >
                     <div className="pt-2 px-4 flex-col items-start pb-0">
                       <b className="text-small">{sponsor.name}</b>
                     </div>

@@ -7,61 +7,27 @@ import { Image } from "@heroui/image";
 import { Spinner } from "@heroui/spinner";
 import { Modal, ModalContent, ModalBody } from "@heroui/modal";
 import { Button } from "@heroui/button";
+import { Accordion, AccordionItem } from "@heroui/accordion";
 
 export default function GalleryPage() {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [nextPageToken, setNextPageToken] = useState(null);
     const [isFetchingMore, setIsFetchingMore] = useState(false);
-    const [columns, setColumns] = useState({ col1: [], col2: [], col3: [] });
-    const [columnCount, setColumnCount] = useState(3);
+
+    // Folder state
+    const [folders, setFolders] = useState([]);
+    const [foldersLoading, setFoldersLoading] = useState(true);
+    const [folderImages, setFolderImages] = useState({});
+    const [loadingFolders, setLoadingFolders] = useState({});
 
     // Lightbox State
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
 
-    // Detect screen size and set column count
-    useEffect(() => {
-        const updateColumnCount = () => {
-            const width = window.innerWidth;
-            if (width < 640) {
-                setColumnCount(1);
-            } else if (width < 1024) {
-                setColumnCount(2);
-            } else {
-                setColumnCount(3);
-            }
-        };
-
-        updateColumnCount();
-        window.addEventListener('resize', updateColumnCount);
-        return () => window.removeEventListener('resize', updateColumnCount);
-    }, []);
-
-    // Distribute images across columns sequentially
-    const distributeImages = useCallback((imagesToDistribute, existingColumns, startIndex = 0) => {
-        const newColumns = { ...existingColumns };
-        const colKeys = ['col1', 'col2', 'col3'];
-
-        imagesToDistribute.forEach((image, idx) => {
-            const columnIndex = (startIndex + idx) % columnCount;
-            const colKey = colKeys[columnIndex];
-            if (newColumns[colKey]) {
-                newColumns[colKey] = [...newColumns[colKey], image];
-            }
-        });
-
-        return newColumns;
-    }, [columnCount]);
-
-    // Redistribute all images when column count changes
-    useEffect(() => {
-        if (images.length > 0) {
-            const newColumns = { col1: [], col2: [], col3: [] };
-            setColumns(distributeImages(images, newColumns, 0));
-        }
-    }, [columnCount, images, distributeImages]);
+    // Fixed height for waffle layout
+    const FIXED_HEIGHT = 300;
 
     // Initial load
     useEffect(() => {
@@ -82,6 +48,44 @@ export default function GalleryPage() {
 
         fetchInitialImages();
     }, []);
+
+    // Fetch folders
+    useEffect(() => {
+        const fetchFolders = async () => {
+            try {
+                const res = await fetch('/api/gallery/folders');
+                const data = await res.json();
+                if (data.folders) {
+                    setFolders(data.folders);
+                }
+            } catch (error) {
+                console.error("Failed to fetch folders", error);
+            } finally {
+                setFoldersLoading(false);
+            }
+        };
+
+        fetchFolders();
+    }, []);
+
+    // Load images for a specific folder when accordion is expanded
+    const loadFolderImages = async (folderId) => {
+        // Don't reload if already loaded
+        if (folderImages[folderId]) return;
+
+        setLoadingFolders(prev => ({ ...prev, [folderId]: true }));
+        try {
+            const res = await fetch(`/api/gallery/folder/${folderId}`);
+            const data = await res.json();
+            if (data.images) {
+                setFolderImages(prev => ({ ...prev, [folderId]: data.images }));
+            }
+        } catch (error) {
+            console.error(`Failed to fetch images for folder ${folderId}`, error);
+        } finally {
+            setLoadingFolders(prev => ({ ...prev, [folderId]: false }));
+        }
+    };
 
     // Fetch more images
     const loadMoreImages = useCallback(async () => {
@@ -172,99 +176,91 @@ export default function GalleryPage() {
                 </p>
             </div>
 
+            {/* Event Folders Accordion */}
+            {!foldersLoading && folders.length > 0 && (
+                <div className="flex flex-col gap-4">
+                    <h2 className="text-2xl font-bold">Events</h2>
+                    <Accordion variant="splitted">
+                        {folders.map((folder) => (
+                            <AccordionItem
+                                key={folder.id}
+                                aria-label={folder.name}
+                                title={folder.name}
+                                onPress={() => loadFolderImages(folder.id)}
+                            >
+                                {loadingFolders[folder.id] ? (
+                                    <div className="flex justify-center items-center py-10">
+                                        <Spinner size="lg" label="Loading images..." />
+                                    </div>
+                                ) : folderImages[folder.id] ? (
+                                    <div className="flex flex-wrap gap-4 w-full justify-center py-4">
+                                        {folderImages[folder.id].map((image, idx) => (
+                                            <Card
+                                                key={image.id}
+                                                isPressable
+                                                onPress={() => {
+                                                    setSelectedImage(image);
+                                                    setSelectedIndex(idx);
+                                                    setIsOpen(true);
+                                                }}
+                                                radius="lg"
+                                                className="border-none bg-transparent shadow-sm overflow-hidden"
+                                                style={{ height: `${FIXED_HEIGHT}px` }}
+                                            >
+                                                <Image
+                                                    alt={image.alt}
+                                                    className="h-full w-auto object-cover transition-transform duration-300 hover:scale-105"
+                                                    src={image.src}
+                                                    style={{ height: `${FIXED_HEIGHT}px` }}
+                                                    referrerPolicy="no-referrer"
+                                                    loading="lazy"
+                                                />
+                                            </Card>
+                                        ))}
+                                    </div>
+                                ) : null}
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
+            )}
+
+            {/* Main Gallery Section */}
+            <div className="flex flex-col gap-4">
+                <h2 className="text-2xl font-bold">All Photos</h2>
+            </div>
+
             {loading ? (
                 <div className="flex justify-center items-center py-20">
                     <Spinner size="lg" label="Loading images..." />
                 </div>
             ) : (
                 <>
-                    <div className="flex gap-4 w-full">
-                        {/* Column 1 */}
-                        {columnCount >= 1 && (
-                            <div className="flex-1 flex flex-col gap-4">
-                                {columns.col1.map((image) => {
-                                    const globalIndex = images.findIndex(img => img.id === image.id);
-                                    return (
-                                        <div key={image.id} className="break-inside-avoid">
-                                            <Card
-                                                isPressable
-                                                onPress={() => handleImageClick(image, globalIndex)}
-                                                radius="lg"
-                                                className="border-none w-full h-auto bg-transparent shadow-none"
-                                            >
-                                                <Image
-                                                    alt={image.alt}
-                                                    className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
-                                                    src={image.src}
-                                                    width="100%"
-                                                    height="100%"
-                                                    referrerPolicy="no-referrer"
-                                                    loading="lazy"
-                                                />
-                                            </Card>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-
-                        {/* Column 2 */}
-                        {columnCount >= 2 && (
-                            <div className="flex-1 flex flex-col gap-4">
-                                {columns.col2.map((image) => {
-                                    const globalIndex = images.findIndex(img => img.id === image.id);
-                                    return (
-                                        <div key={image.id} className="break-inside-avoid">
-                                            <Card
-                                                isPressable
-                                                onPress={() => handleImageClick(image, globalIndex)}
-                                                radius="lg"
-                                                className="border-none w-full h-auto bg-transparent shadow-none"
-                                            >
-                                                <Image
-                                                    alt={image.alt}
-                                                    className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
-                                                    src={image.src}
-                                                    width="100%"
-                                                    height="100%"
-                                                    referrerPolicy="no-referrer"
-                                                    loading="lazy"
-                                                />
-                                            </Card>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-
-                        {/* Column 3 */}
-                        {columnCount >= 3 && (
-                            <div className="flex-1 flex flex-col gap-4">
-                                {columns.col3.map((image) => {
-                                    const globalIndex = images.findIndex(img => img.id === image.id);
-                                    return (
-                                        <div key={image.id} className="break-inside-avoid">
-                                            <Card
-                                                isPressable
-                                                onPress={() => handleImageClick(image, globalIndex)}
-                                                radius="lg"
-                                                className="border-none w-full h-auto bg-transparent shadow-none"
-                                            >
-                                                <Image
-                                                    alt={image.alt}
-                                                    className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
-                                                    src={image.src}
-                                                    width="100%"
-                                                    height="100%"
-                                                    referrerPolicy="no-referrer"
-                                                    loading="lazy"
-                                                />
-                                            </Card>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
+                    {/* Waffle Layout */}
+                    <div className="flex flex-wrap gap-4 w-full justify-center">
+                        {images.map((image, index) => {
+                            // Calculate width based on aspect ratio to maintain fixed height
+                            // We'll use inline style for dynamic width calculation
+                            return (
+                                <Card
+                                    key={image.id}
+                                    isPressable
+                                    onPress={() => handleImageClick(image, index)}
+                                    radius="lg"
+                                    className="border-none bg-transparent shadow-sm overflow-hidden"
+                                    style={{ height: `${FIXED_HEIGHT}px` }}
+                                >
+                                    <Image
+                                        alt={image.alt}
+                                        className="h-full w-auto object-cover transition-transform duration-300 hover:scale-105"
+                                        src={image.src}
+                                        style={{ height: `${FIXED_HEIGHT}px` }}
+                                        referrerPolicy="no-referrer"
+                                        loading="lazy"
+                                    />
+                                </Card>
+                            );
+                        })}
                     </div>
                     {/* Trigger element for Infinite Scroll */}
                     <div id="load-more-trigger" className="h-10 flex justify-center items-center w-full">
