@@ -9,7 +9,7 @@ import { DiscordIcon } from "@/components/icons";
 
 export default function JoinPage() {
     return (
-        <div className="flex flex-col gap-12 py-8 md:py-10">
+        <div className="container mx-auto max-w-[80vw] flex flex-col gap-12 py-8 md:py-10">
 
             {/* Hero Section */}
             <div className="text-center flex flex-col items-center gap-6">

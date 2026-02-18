@@ -2,17 +2,23 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
     request: Request,
-    { params }: { params: { folderId: string } }
+    props: { params: Promise<{ folderId: string }> }
 ) {
+    const params = await props.params;
     const { searchParams } = new URL(request.url);
     const pageToken = searchParams.get('nextPageToken') || "";
-    const PAGE_SIZE = 20;
+    const PAGE_SIZE = 25;
 
-    const API_KEY = "AIzaSyC8Pa3VIND-M1hZ0A2IuXSjtFSiR_KHb5g";
+    const API_KEY = process.env.GOOGLE_DRIVE_API_KEY;
     const folderId = params.folderId;
 
+    if (!API_KEY) {
+        console.error("Missing required environment variable: GOOGLE_DRIVE_API_KEY");
+        return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+    }
+
     // URL to list files in the specific folder
-    let url = `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and trashed=false and mimeType contains 'image/'&key=${API_KEY}&fields=nextPageToken,files(id,name,thumbnailLink)&pageSize=${PAGE_SIZE}&orderBy=createdTime desc`;
+    let url = `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and trashed=false and (mimeType contains 'image/' or mimeType contains 'video/')&key=${API_KEY}&fields=nextPageToken,files(id,name,thumbnailLink,mimeType,webViewLink)&pageSize=${PAGE_SIZE}&orderBy=createdTime desc`;
 
     if (pageToken) {
         url += `&pageToken=${pageToken}`;
@@ -30,16 +36,21 @@ export async function GET(
         // Map to our gallery format
         const images = files.map((file: any) => {
             let src = file.thumbnailLink;
-            // Request high-quality thumbnail
-            if (src && src.includes('=')) {
+
+            // Only apply high-res hack to images.
+            if (src && src.includes('=') && file.mimeType && file.mimeType.includes('image/')) {
                 src = src.replace(/=s\d+$/, '=s2048');
+            } else if (src && src.includes('=') && file.mimeType && file.mimeType.includes('video/')) {
+                src = src.replace(/=s\d+$/, '=s800');
             }
 
             return {
                 id: file.id,
                 src: src,
                 alt: file.name,
-                caption: ""
+                caption: "",
+                mimeType: file.mimeType,
+                webViewLink: file.webViewLink
             };
         });
 

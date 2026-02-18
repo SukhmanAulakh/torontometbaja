@@ -3,15 +3,20 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const pageToken = searchParams.get('nextPageToken') || "";
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 25;
 
-  const API_KEY = "AIzaSyC8Pa3VIND-M1hZ0A2IuXSjtFSiR_KHb5g";
-  const FOLDER_ID = "1dIWdibCp8ulxcnxOs9CShchW0_WxtfSP";
+  const API_KEY = process.env.GOOGLE_DRIVE_API_KEY;
+  const FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID;
+
+  if (!API_KEY || !FOLDER_ID) {
+    console.error("Missing required environment variables: GOOGLE_DRIVE_API_KEY or GOOGLE_DRIVE_FOLDER_ID");
+    return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+  }
 
   // URL to list files in the specific folder
-  // Query changed to "mimeType contains 'image/'" to include HEIC, WebP, etc.
+  // Query changed to include images and videos
   // Added orderBy to ensure consistent ordering (Newest first)
-  let url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}' in parents and trashed=false and mimeType contains 'image/'&key=${API_KEY}&fields=nextPageToken,files(id,name,thumbnailLink)&pageSize=${PAGE_SIZE}&orderBy=createdTime desc`;
+  let url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}' in parents and trashed=false and (mimeType contains 'image/' or mimeType contains 'video/')&key=${API_KEY}&fields=nextPageToken,files(id,name,thumbnailLink,mimeType,webViewLink)&pageSize=${PAGE_SIZE}&orderBy=createdTime desc`;
 
   if (pageToken) {
     url += `&pageToken=${pageToken}`;
@@ -29,18 +34,27 @@ export async function GET(request: Request) {
     // Map to our gallery format
     const images = files.map((file: any) => {
       let src = file.thumbnailLink;
-      // TRICK: Instead of using the original file (which might be HEIC), we request a huge thumbnail.
-      // Google Drive generates JPEG thumbnails for HEIC files.
-      // replacing with '=s2048' ensures high quality and format compatibility.
-      if (src && src.includes('=')) {
+
+      // Only apply high-res hack to images. 
+      // For videos, the default thumbnail link is safer to avoid breakage/compression issues.
+      if (src && src.includes('=') && file.mimeType && file.mimeType.includes('image/')) {
         src = src.replace(/=s\d+$/, '=s2048');
+      } else if (src && src.includes('=') && file.mimeType && file.mimeType.includes('video/')) {
+        // For videos, we might want a slightly larger thumbnail than default but not too huge to break it
+        // Often removing the size param gives the default size which is decent, or we can try s800
+        // standard drive thumbnails for videos can sometimes be tricky with size params.
+        // Let's try s1024 for videos if possible, or just remove the param to let drive decide.
+        // Ideally, try to get a decent size.
+        src = src.replace(/=s\d+$/, '=s800');
       }
 
       return {
         id: file.id,
         src: src,
         alt: file.name,
-        caption: ""
+        caption: "",
+        mimeType: file.mimeType,
+        webViewLink: file.webViewLink
       };
     });
 

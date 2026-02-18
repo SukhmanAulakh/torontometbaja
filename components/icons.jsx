@@ -132,13 +132,13 @@ export const PackageIcon = ({
       {/* Wheels */}
       <circle cx="4" cy="13" r="3" fill="currentColor" />
       <circle cx="19" cy="13" r="3" fill="currentColor" />
-        
+
       {/* Body */}
       <path
         d="M1 11h24v-2l-2-4h-14l-2-8H1L2 2L1 9v2z"
         fill="currentColor"
       />
-      
+
       {/* Roll cage */}
       <path
         d="M2 4v-7h13v9M19 1M9 4v-4"
@@ -183,5 +183,80 @@ export const SearchIcon = (props) => (
       strokeLinejoin="round"
       strokeWidth="2"
     />
+  </svg>
+);
+
+export const VolumeHighIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height={size || height}
+    role="presentation"
+    viewBox="0 0 24 24"
+    width={size || width}
+    {...props}
+  >
+    <path
+      d="M11 5L6 9H2V15H6L11 19V5Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+    <path
+      d="M15.54 8.46C16.4774 9.39764 17.0041 10.6692 17.0041 11.995C17.0041 13.3208 16.4774 14.5924 15.54 15.53"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+    <path
+      d="M19.07 4.93C20.9447 6.80527 21.9983 9.34836 21.9983 12C21.9983 14.6516 20.9447 17.1947 19.07 19.07"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+  </svg>
+);
+
+export const VolumeMuteIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height={size || height}
+    role="presentation"
+    viewBox="0 0 24 24"
+    width={size || width}
+    {...props}
+  >
+    <path
+      d="M11 5L6 9H2V15H6L11 19V5Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+    <path
+      d="M17 14L17.01 14.01" // Small dot or X part?
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    {/* Using a simpler mute icon path similar to lucide-volume-x */}
+    <path d="M23 9L17 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M17 9L23 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );

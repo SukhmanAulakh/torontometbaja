@@ -219,3 +219,9 @@ export const subteams = [
     learn: ["Grant Writing & Pitching", "Social Media Marketing", "Budgeting", "Project Management"]
   }
 ];
+
+export const eventDates = {
+  "Winter Baja 2025": "Jan 2025",
+  "SAE South Carolina 2025": "Oct 2025",
+  "Winter Baja 2026": "Jan 2026",
+};

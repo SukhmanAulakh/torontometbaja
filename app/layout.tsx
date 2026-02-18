@@ -44,10 +44,10 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col">
             <Navbar />
-            <main className="container mx-auto max-w-[80vw] flex-grow">
+            <main className="w-full flex-grow">
               {children}
             </main>
-            <footer className="w-full flex items-center justify-center py-3">
+            <footer className="w-full flex items-center justify-center pt-3 pb-10 relative z-10 bg-background">
               <span className="text-default-600">© 2026 TMU Baja Racing</span>
             </footer>
           </div>

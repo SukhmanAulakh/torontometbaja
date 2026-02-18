@@ -29,7 +29,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-black/55" />
 
           {/* Blur layer — transparent so we can SEE the image */}
-          <div className="absolute inset-0 backdrop-blur-sm bg-transparent" />
+          <div className="absolute inset-0 bg-transparent" />
         </div>
 
         {/* Banner content */}

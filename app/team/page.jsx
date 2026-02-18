@@ -5,7 +5,7 @@ import { Avatar } from "@heroui/avatar";
 
 export default function TeamPage() {
   return (
-    <div className="flex flex-col gap-8 py-8 md:py-10">
+    <div className="container mx-auto max-w-[80vw] flex flex-col gap-8 py-8 md:py-10">
       <div className="text-center">
         <h1 className={title()}>Meet the Team</h1>
         <p className="mt-4 text-lg text-default-500">
