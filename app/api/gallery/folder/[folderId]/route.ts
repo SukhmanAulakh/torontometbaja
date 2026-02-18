@@ -18,7 +18,8 @@ export async function GET(
     }
 
     // URL to list files in the specific folder
-    let url = `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and trashed=false and (mimeType contains 'image/' or mimeType contains 'video/')&key=${API_KEY}&fields=nextPageToken,files(id,name,thumbnailLink,mimeType,webViewLink)&pageSize=${PAGE_SIZE}&orderBy=createdTime desc`;
+    const fields = "nextPageToken,files(id,name,thumbnailLink,mimeType,webViewLink,imageMediaMetadata(width,height),videoMediaMetadata(width,height))";
+    let url = `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and trashed=false and (mimeType contains 'image/' or mimeType contains 'video/')&key=${API_KEY}&fields=${fields}&pageSize=${PAGE_SIZE}&orderBy=createdTime desc`;
 
     if (pageToken) {
         url += `&pageToken=${pageToken}`;
@@ -50,7 +51,9 @@ export async function GET(
                 alt: file.name,
                 caption: "",
                 mimeType: file.mimeType,
-                webViewLink: file.webViewLink
+                webViewLink: file.webViewLink,
+                width: Number(file.imageMediaMetadata?.width || file.videoMediaMetadata?.width) || null,
+                height: Number(file.imageMediaMetadata?.height || file.videoMediaMetadata?.height) || null
             };
         });
 

@@ -85,6 +85,9 @@ export default function GalleryPage() {
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
+    const [activeImageSet, setActiveImageSet] = useState([]);
+    const [activeFolderId, setActiveFolderId] = useState(null); // 'global' or folder.id
+    const [isWaitingForNext, setIsWaitingForNext] = useState(false);
 
     // Fixed height for waffle layout
     const FIXED_HEIGHT = 300;
@@ -220,7 +223,7 @@ export default function GalleryPage() {
                     loadMoreImages();
                 }
             },
-            { threshold: 0.1, rootMargin: "200px" } // Trigger earlier
+            { threshold: 0.1, rootMargin: "100px" } // Trigger when nearing the button
         );
 
         const target = document.getElementById("load-more-trigger");
@@ -232,11 +235,54 @@ export default function GalleryPage() {
     }, [loadMoreImages, hasMore, isFetchingMore]);
 
 
-    const handleImageClick = (image, index) => {
+    // Sync activeImageSet whenever source data changes while lightbox is open
+    useEffect(() => {
+        if (!isOpen) {
+            setActiveFolderId(null);
+            setIsWaitingForNext(false);
+            return;
+        }
+
+        if (activeFolderId === 'global') {
+            setActiveImageSet(images);
+        } else if (activeFolderId && folderImages[activeFolderId]) {
+            setActiveImageSet(folderImages[activeFolderId].images);
+        }
+    }, [isOpen, activeFolderId, images, folderImages]);
+
+    // Advance lightbox once data is loaded if we were waiting
+    useEffect(() => {
+        if (isWaitingForNext && selectedIndex !== null) {
+            // If more images were loaded
+            if (selectedIndex < activeImageSet.length - 1) {
+                const nextIdx = selectedIndex + 1;
+                setSelectedIndex(nextIdx);
+                setSelectedImage(activeImageSet[nextIdx]);
+                setIsWaitingForNext(false);
+            }
+        }
+    }, [isWaitingForNext, selectedIndex, activeImageSet]);
+
+    const handleImageClick = (image, index, folderId = 'global') => {
+        setActiveFolderId(folderId);
+        // Initial set - will be kept in sync by the useEffect above
+        const initialSet = folderId === 'global' ? images : folderImages[folderId].images;
+        setActiveImageSet(initialSet);
         setSelectedImage(image);
         setSelectedIndex(index);
         setIsOpen(true);
     };
+
+    // Sync background scroll with lightbox traversal
+    useEffect(() => {
+        if (!isOpen || !selectedImage || !activeFolderId) return;
+
+        const targetId = `thumb-${activeFolderId}-${selectedImage.id}`;
+        const element = document.getElementById(targetId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [isOpen, selectedImage, activeFolderId]);
 
     const handleClose = () => {
         setIsOpen(false);
@@ -247,18 +293,32 @@ export default function GalleryPage() {
     };
 
     const handlePrev = useCallback(() => {
-        if (selectedIndex === null || images.length === 0) return;
-        const newIndex = (selectedIndex - 1 + images.length) % images.length;
+        if (selectedIndex === null || activeImageSet.length === 0) return;
+        const newIndex = (selectedIndex - 1 + activeImageSet.length) % activeImageSet.length;
         setSelectedIndex(newIndex);
-        setSelectedImage(images[newIndex]);
-    }, [selectedIndex, images]);
+        setSelectedImage(activeImageSet[newIndex]);
+    }, [selectedIndex, activeImageSet]);
 
     const handleNext = useCallback(() => {
-        if (selectedIndex === null || images.length === 0) return;
-        const newIndex = (selectedIndex + 1) % images.length;
+        if (selectedIndex === null || activeImageSet.length === 0) return;
+
+        // If we are at the last image and there's more to load
+        if (selectedIndex === activeImageSet.length - 1) {
+            if (activeFolderId === 'global' && hasMore) {
+                setIsWaitingForNext(true);
+                loadMoreImages();
+                return;
+            } else if (activeFolderId && activeFolderId !== 'global' && folderImages[activeFolderId]?.nextPageToken) {
+                setIsWaitingForNext(true);
+                loadMoreFolderImages(activeFolderId);
+                return;
+            }
+        }
+
+        const newIndex = (selectedIndex + 1) % activeImageSet.length;
         setSelectedIndex(newIndex);
-        setSelectedImage(images[newIndex]);
-    }, [selectedIndex, images]);
+        setSelectedImage(activeImageSet[newIndex]);
+    }, [selectedIndex, activeImageSet, activeFolderId, hasMore, folderImages, loadMoreImages]);
 
     // Keyboard navigation
     useEffect(() => {
@@ -375,40 +435,42 @@ export default function GalleryPage() {
                                         ) : folderImages[folder.id] ? (
                                             <div className="flex flex-col gap-4 w-full items-center py-4">
                                                 <div className="flex flex-wrap gap-4 w-full justify-center">
-                                                    {folderImages[folder.id].images.map((image, idx) => (
-                                                        <Card
-                                                            key={image.id}
-                                                            isPressable
-                                                            onPress={() => {
-                                                                setSelectedImage(image);
-                                                                setSelectedIndex(idx);
-                                                                setIsOpen(true);
-                                                            }}
-                                                            radius="lg"
-                                                            className="border-none bg-transparent shadow-sm overflow-hidden"
-                                                            style={{ height: `${FIXED_HEIGHT}px` }}
-                                                        >
-                                                            <div className="relative w-full h-full">
-                                                                <Image
-                                                                    alt={image.alt}
-                                                                    className="h-full w-auto object-cover transition-transform duration-300 hover:scale-105"
-                                                                    src={image.src}
-                                                                    style={{ height: `${FIXED_HEIGHT}px` }}
-                                                                    referrerPolicy="no-referrer"
-                                                                    loading="lazy"
-                                                                />
-                                                                {image.mimeType && image.mimeType.includes('video') && (
-                                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors z-10 pointer-events-none">
-                                                                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 shadow-lg">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-white">
-                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
-                                                                            </svg>
+                                                    {folderImages[folder.id].images.map((image, idx) => {
+                                                        const aspectRatio = image.width && image.height ? image.width / image.height : 1;
+                                                        const cardWidth = FIXED_HEIGHT * aspectRatio;
+
+                                                        return (
+                                                            <Card
+                                                                id={`thumb-${folder.id}-${image.id}`}
+                                                                key={image.id}
+                                                                isPressable
+                                                                onPress={() => handleImageClick(image, idx, folder.id)}
+                                                                radius="lg"
+                                                                className="border-none bg-transparent shadow-sm overflow-hidden"
+                                                                style={{ height: `${FIXED_HEIGHT}px`, width: `${cardWidth}px` }}
+                                                            >
+                                                                <div className="relative w-full h-full">
+                                                                    <Image
+                                                                        alt={image.alt}
+                                                                        className={`h-full w-full ${image.mimeType?.includes('video') ? 'object-contain' : 'object-cover'} transition-transform duration-300 hover:scale-105`}
+                                                                        src={image.src}
+                                                                        style={{ height: `${FIXED_HEIGHT}px`, width: `${cardWidth}px` }}
+                                                                        referrerPolicy="no-referrer"
+                                                                        loading="lazy"
+                                                                    />
+                                                                    {image.mimeType && image.mimeType.includes('video') && (
+                                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors z-10 pointer-events-none">
+                                                                            <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 shadow-lg">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-white">
+                                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+                                                                                </svg>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </Card>
-                                                    ))}
+                                                                    )}
+                                                                </div>
+                                                            </Card>
+                                                        );
+                                                    })}
                                                 </div>
 
                                                 {folderImages[folder.id].nextPageToken && (
@@ -444,23 +506,25 @@ export default function GalleryPage() {
                             {/* Waffle Layout */}
                             <div className="flex flex-wrap gap-4 w-full justify-center">
                                 {images.map((image, index) => {
-                                    // Calculate width based on aspect ratio to maintain fixed height
-                                    // We'll use inline style for dynamic width calculation
+                                    const aspectRatio = image.width && image.height ? image.width / image.height : 1;
+                                    const cardWidth = FIXED_HEIGHT * aspectRatio;
+
                                     return (
                                         <Card
+                                            id={`thumb-global-${image.id}`}
                                             key={image.id}
                                             isPressable
-                                            onPress={() => handleImageClick(image, index)}
+                                            onPress={() => handleImageClick(image, index, 'global')}
                                             radius="lg"
                                             className="border-none bg-transparent shadow-sm overflow-hidden"
-                                            style={{ height: `${FIXED_HEIGHT}px` }}
+                                            style={{ height: `${FIXED_HEIGHT}px`, width: `${cardWidth}px` }}
                                         >
                                             <div className="relative w-full h-full">
                                                 <Image
                                                     alt={image.alt}
-                                                    className="h-full w-auto object-cover transition-transform duration-300 hover:scale-105"
+                                                    className={`h-full w-full ${image.mimeType?.includes('video') ? 'object-contain' : 'object-cover'} transition-transform duration-300 hover:scale-105`}
                                                     src={image.src}
-                                                    style={{ height: `${FIXED_HEIGHT}px` }}
+                                                    style={{ height: `${FIXED_HEIGHT}px`, width: `${cardWidth}px` }}
                                                     referrerPolicy="no-referrer"
                                                     loading="lazy"
                                                 />
@@ -478,10 +542,21 @@ export default function GalleryPage() {
                                     );
                                 })}
                             </div>
-                            {/* Trigger element for Infinite Scroll */}
-                            <div id="load-more-trigger" className="h-10 flex justify-center items-center w-full">
-                                {isFetchingMore && <Spinner size="sm" />}
-                            </div>
+                            {/* Load More Button / Trigger element for Infinite Scroll */}
+                            {hasMore && (
+                                <div id="load-more-trigger" className="flex justify-center items-center w-full mt-12 pb-24">
+                                    <Button
+                                        variant="flat"
+                                        color="primary"
+                                        isLoading={isFetchingMore}
+                                        onPress={loadMoreImages}
+                                        className="min-w-[200px] font-semibold"
+                                        size="lg"
+                                    >
+                                        Load More
+                                    </Button>
+                                </div>
+                            )}
                         </>
                     )}
 
@@ -502,7 +577,6 @@ export default function GalleryPage() {
                             {(onClose) => (
                                 <ModalBody className="relative flex items-center justify-center h-full w-full">
 
-                                    {/* Previous Button */}
                                     <Button
                                         isIconOnly
                                         variant="flat"
@@ -514,12 +588,30 @@ export default function GalleryPage() {
                                         </svg>
                                     </Button>
 
+                                    {/* Folder Info and Counter Overlay */}
+                                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-1 pointer-events-none">
+                                        <div className="bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 shadow-lg">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-white/90 font-semibold text-sm">
+                                                    {activeFolderId === 'global' ? 'All Photos' : (folders.find(f => f.id === activeFolderId)?.name || 'Event')}
+                                                </span>
+                                                <div className="w-1 h-1 rounded-full bg-white/30"></div>
+                                                <span className="text-white/70 font-medium text-xs font-mono">
+                                                    {(selectedIndex ?? 0) + 1} / {activeFolderId === 'global' ? (folders.reduce((acc, f) => acc + (f.count || 0), 0) || activeImageSet.length) : (folders.find(f => f.id === activeFolderId)?.count || activeImageSet.length)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     {selectedImage && (
                                         <div className="relative group max-w-[90%] max-h-[90%] flex justify-center items-center w-full h-full">
                                             {selectedImage.mimeType && selectedImage.mimeType.includes('video') ? (
                                                 <iframe
                                                     src={`https://drive.google.com/file/d/${selectedImage.id}/preview`}
-                                                    className="w-[90vw] h-[80vh] max-w-[1200px] border-none rounded-lg shadow-2xl"
+                                                    className="max-h-[80vh] w-auto max-w-[90vw] border-none rounded-lg shadow-2xl"
+                                                    style={{
+                                                        aspectRatio: selectedImage.width && selectedImage.height ? `${selectedImage.width} / ${selectedImage.height}` : '16 / 9'
+                                                    }}
                                                     allow="autoplay"
                                                     title={selectedImage.alt}
                                                 />
@@ -540,12 +632,15 @@ export default function GalleryPage() {
                                     <Button
                                         isIconOnly
                                         variant="flat"
+                                        isLoading={isWaitingForNext}
                                         className="absolute right-4 z-50 text-white bg-black/20 hover:bg-black/40 hidden sm:flex"
                                         onPress={handleNext}
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                                        </svg>
+                                        {!isWaitingForNext && (
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                            </svg>
+                                        )}
                                     </Button>
 
                                 </ModalBody>

@@ -16,7 +16,9 @@ export async function GET(request: Request) {
   // URL to list files in the specific folder
   // Query changed to include images and videos
   // Added orderBy to ensure consistent ordering (Newest first)
-  let url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}' in parents and trashed=false and (mimeType contains 'image/' or mimeType contains 'video/')&key=${API_KEY}&fields=nextPageToken,files(id,name,thumbnailLink,mimeType,webViewLink)&pageSize=${PAGE_SIZE}&orderBy=createdTime desc`;
+  // Added imageMediaMetadata and videoMediaMetadata for dimensions
+  const fields = "nextPageToken,files(id,name,thumbnailLink,mimeType,webViewLink,imageMediaMetadata(width,height),videoMediaMetadata(width,height))";
+  let url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}' in parents and trashed=false and (mimeType contains 'image/' or mimeType contains 'video/')&key=${API_KEY}&fields=${fields}&pageSize=${PAGE_SIZE}&orderBy=createdTime desc`;
 
   if (pageToken) {
     url += `&pageToken=${pageToken}`;
@@ -54,7 +56,9 @@ export async function GET(request: Request) {
         alt: file.name,
         caption: "",
         mimeType: file.mimeType,
-        webViewLink: file.webViewLink
+        webViewLink: file.webViewLink,
+        width: Number(file.imageMediaMetadata?.width || file.videoMediaMetadata?.width) || null,
+        height: Number(file.imageMediaMetadata?.height || file.videoMediaMetadata?.height) || null
       };
     });
 
