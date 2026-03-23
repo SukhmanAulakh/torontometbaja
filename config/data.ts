@@ -3,9 +3,11 @@ import aserImg from "../resources/headshots/aser-linkedin.png";
 import sukhmanImg from "../resources/headshots/sukhmanjot-linkedin.png";
 import jasmanImg from "../resources/headshots/jasman-linkedin.png";
 import kheirthanImg from "../resources/headshots/kheirthan-linkedin.png";
+import ilhamImg from "../resources/headshots/ilham-linkedin.jpeg";
 import danielImg from "../resources/headshots/daniel-linkedin.png";
 import amrajImg from "../resources/headshots/amraj-linkedin.png";
-import suhaibImg from "../resources/headshots/suhaib-linkedin.png";
+import sinwanImg from "../resources/headshots/sinwan-linkedin.jpeg";
+import ryanImg from "../resources/headshots/ryan-linkedin.jpeg";
 
 import solidworksImg from "../resources/sponsors/solidworks.webp";
 import briggsImg from "../resources/sponsors/briggs.webp";
@@ -39,6 +41,12 @@ export const teamMembers = [
     imageUrl: aserImg.src,
   },
   {
+    name: "Daniel Chirichella",
+    role: "Project Manager",
+    bio: "Directing the team towards its goals and meshing all subteams together.",
+    imageUrl: danielImg.src,
+  },
+  {
     name: "Sukhmanjot Aulakh",
     role: "Electrical Lead",
     bio: "Powering the sensors and data acquisition systems.",
@@ -57,22 +65,28 @@ export const teamMembers = [
     imageUrl: kheirthanImg.src,
   },
   {
-    name: "Daniel Chirichella",
-    role: "Welding & Operations Lead",
+    name: "Ilham Saidur",
+    role: "Powertrain Lead",
+    bio: "Driving the force behind the wheels.",
+    imageUrl: ilhamImg.src,
+  },
+  {
+    name: "Ryan Cordeau",
+    role: "Manufacturing & Operations Lead",
     bio: "Mastering the art of fabrication and team operations.",
-    imageUrl: danielImg.src,
+    imageUrl: ryanImg.src,
   },
   {
     name: "Amraj Grewal",
-    role: "Human Factors Lead",
-    bio: "Designing for driver ergonomics and safety.",
+    role: "Human Factors and Logisitics Lead",
+    bio: "Designing for driver ergonomics and safety. Managing logistics for team operations.",
     imageUrl: amrajImg.src,
   },
   {
-    name: "Suhaib Momin",
+    name: "Sinwan Ansari",
     role: "Chassis Lead",
     bio: "Designing the frame that protects our driver.",
-    imageUrl: suhaibImg.src,
+    imageUrl: sinwanImg.src,
   },
 ];
 
@@ -196,26 +210,31 @@ export const subteams = [
   {
     name: "Suspension",
     description: "Responsible for connecting the car to the ground. They design the shocks, arms, and geometry to handle rough terrain.",
-    learn: ["Kinematics & Dynamics", "Shock Tuning", "Component Design", "Unsprung Mass Optimization"]
+    learn: ["Kinematics & Dynamics", "Shock Tuning", "Component Design", "Load Analysis and Optimization"]
   },
   {
     name: "Powertrain",
     description: "The heart of the car. This team deals with the engine, CVT, and custom gearbox to transfer power efficiently.",
-    learn: ["Gearbox Design", "CVT Tuning", "Engine Maintenance", "Machining (Lathe/Mill)"]
+    learn: ["Gearbox Design", "CVT Tuning", "Engine Maintenance", "Drivetrain Design"]
   },
   {
     name: "Electrical",
     description: "The nervous system. They manage the data acquisition (DAQ), sensors, wiring harness, and brake light systems.",
-    learn: ["PCB Design", "Microcontrollers (Arduino/STM32)", "Wiring & Soldering", "Data Analysis"]
+    learn: ["PCB Design", "Microcontrollers (Arduino)", "Wiring & Soldering", "Safety Systems", "Data Analysis"]
   },
   {
     name: "Brakes & Controls",
     description: "Stopping power and driver inputs. This team designs the hydraulic brake system and pedal assembly.",
-    learn: ["Hydraulic Systems", "Ergonomic Design", "Fluid Dynamics", "CNC Machining"]
+    learn: ["Hydraulic Systems", "Fluid Dynamics"]
+  },
+  {
+    name: "Human Factors",
+    description: "The Human Factors team analyzes the interaction between the vehicle and the driver, focusing on ergonomics, driver comfort, and safety. This team designs the seating, controls, and visibility to ensure optimal driver performance during the grueling race. They study and implement features that improve communication with the vehicle and reduce fatigue, ensuring the driver can focus on the task ahead with maximum efficiency and safety.",
+    learn: ["Ergonomic Design", "Quality Assurance and Testing"]
   },
   {
     name: "Business & Media",
-    description: "The fuel for the team. They handle sponsorships, finances, social media, and competition logistics.",
+    description: "The fuel for the team. They handle sponsorships, finances, social media, and competition logistics. They also handle the SAE Budget Presentation.",
     learn: ["Grant Writing & Pitching", "Social Media Marketing", "Budgeting", "Project Management"]
   }
 ];
