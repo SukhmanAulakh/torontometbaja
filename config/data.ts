@@ -8,6 +8,8 @@ import danielImg from "../resources/headshots/daniel-linkedin.png";
 import amrajImg from "../resources/headshots/amraj-linkedin.png";
 import sinwanImg from "../resources/headshots/sinwan-linkedin.jpeg";
 import ryanImg from "../resources/headshots/ryan-linkedin.jpeg";
+import anthonyImg from "../resources/headshots/anthony-linkedin.jpeg";
+import jackImg from "../resources/headshots/blank_headshot.jpg";
 
 import solidworksImg from "../resources/sponsors/solidworks.webp";
 import briggsImg from "../resources/sponsors/briggs.webp";
@@ -54,7 +56,7 @@ export const teamMembers = [
   },
   {
     name: "Jasman Singh",
-    role: "Vehicle Dynamics Lead",
+    role: "Head of Performance",
     bio: "Optimizing handling and performance on the track.",
     imageUrl: jasmanImg.src,
   },
@@ -84,9 +86,21 @@ export const teamMembers = [
   },
   {
     name: "Sinwan Ansari",
-    role: "Chassis Lead",
+    role: "Chassis & Frame Lead",
     bio: "Designing the frame that protects our driver.",
     imageUrl: sinwanImg.src,
+  },
+  {
+    name: "Anthony Cifa",
+    role: "Social Media & Marketing Lead",
+    bio: "Managing the team's online presence and marketing efforts.",
+    imageUrl: anthonyImg.src,
+  },
+  {
+    name: "Jack Poirier",
+    role: "Business Lead",
+    bio: "Overseeing the team's business operations and strategic initiatives.",
+    imageUrl: jackImg.src,
   },
 ];
 
