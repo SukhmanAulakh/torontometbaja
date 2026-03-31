@@ -7,6 +7,7 @@ import { Providers } from "./providers";
 
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
   title: {
@@ -47,9 +48,7 @@ export default function RootLayout({
             <main className="w-full flex-grow">
               {children}
             </main>
-            <footer className="w-full flex items-center justify-center pt-3 pb-10 relative z-10 bg-background">
-              <span className="text-default-600">© 2026 TMU Baja Racing</span>
-            </footer>
+            <Footer />
           </div>
         </Providers>
       </body>

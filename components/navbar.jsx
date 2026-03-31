@@ -47,7 +47,7 @@ export const Navbar = () => {
       <NavbarContent justify="start">
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="md:hidden"
+          className="lg:hidden"
         />
         <NavbarBrand>
           <NextLink href="/" className="flex items-center gap-2"
@@ -57,7 +57,7 @@ export const Navbar = () => {
             <p className="font-bold text-inherit">TMU Baja</p>
           </NextLink>
         </NavbarBrand>
-        <div className="hidden md:flex gap-6 ml-6">
+        <div className="hidden lg:flex gap-6 ml-6">
           <NavbarItem>
             <Link color={
               ("About" == selectedPage)
@@ -114,10 +114,21 @@ export const Navbar = () => {
               Join Us
             </Link>
           </NavbarItem>
+          <NavbarItem>
+            <Link color={
+              ("Contact Us" == selectedPage)
+                ? "danger"
+                : "foreground"
+            } href="/contact"
+              onClick={() => setSelectedPage("Contact Us")}
+            >
+              Contact Us
+            </Link>
+          </NavbarItem>
         </div>
       </NavbarContent>
       {/* Right Section (Icons + Buttons) */}
-      <NavbarContent justify="end" className="hidden sm:flex gap-4">
+      <NavbarContent justify="end" className="hidden lg:flex gap-4">
         <NavbarItem className="flex gap-2">
           <Link
             isExternal
@@ -163,7 +174,7 @@ export const Navbar = () => {
       </NavbarContent>
 
       {/* Mobile Right Section */}
-      <NavbarContent className="sm:hidden" justify="end">
+      <NavbarContent className="lg:hidden" justify="end">
         <Link
           isExternal
           aria-label="Instagram"

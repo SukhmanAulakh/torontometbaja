@@ -17,12 +17,28 @@ export default function TeamPage() {
         {teamMembers.map((member, index) => (
           <Card key={index} className="py-6">
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-center">
-              <Avatar
-                isBordered
-                color="primary"
-                src={member.imageUrl}
-                className="w-44 h-44 text-large mb-4"
-              />
+              {member.linkedin ? (
+                <a 
+                  href={member.linkedin} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+                >
+                  <Avatar
+                    isBordered
+                    color="primary"
+                    src={member.imageUrl}
+                    className="w-44 h-44 text-large mb-4 shadow-lg ring-offset-2 ring-offset-background hover:ring-2 hover:ring-primary transition-all"
+                  />
+                </a>
+              ) : (
+                <Avatar
+                  isBordered
+                  color="primary"
+                  src={member.imageUrl}
+                  className="w-44 h-44 text-large mb-4 shadow-sm"
+                />
+              )}
               <p className="text-small uppercase font-bold text-default-500 mt-2">{member.role}</p>
               <h4 className="font-bold text-2xl">{member.name}</h4>
             </CardHeader>
