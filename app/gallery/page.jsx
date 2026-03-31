@@ -345,7 +345,7 @@ export default function GalleryPage() {
                     <video
                         ref={videoRef}
                         className="absolute inset-0 w-full h-full object-cover filter scale-105"
-                        src="/winter2026jump.MOV"
+                        src="/winter2026jump.mov"
                         muted={false}
                         playsInline
                         onEnded={handleVideoEnded}
