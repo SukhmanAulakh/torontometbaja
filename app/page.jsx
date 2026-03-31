@@ -1,16 +1,17 @@
 "use client";
 
-import { Link } from "@heroui/link";
-import { Snippet } from "@heroui/snippet";
-import { Code } from "@heroui/code";
-import { button as buttonStyles } from "@heroui/theme";
+import { Button } from "@heroui/button";
 import Image from "next/image";
+import { Card, CardBody } from "@heroui/card";
+import { Image as HeroImage } from "@heroui/image";
 
-import { title, subtitle } from "@/components/primitives";
-import { LinkedInIcon } from "@/components/icons";
+import { title } from "@/components/primitives";
+import { sponsors } from "@/config/data";
 import "../styles/globals.css";
 
 export default function Home() {
+  const platinumSponsors = sponsors.filter(s => s.tier === 'Platinum');
+
   return (
     <main className="flex flex-col items-center justify-center">
       {/* HERO SECTION */}
@@ -20,7 +21,6 @@ export default function Home() {
           <Image
             src={require("../resources/LavalBaja201942.jpg")}
             alt="Baja car on track"
-            position="fixed"
             fill
             priority
             className="object-cover"
@@ -39,9 +39,9 @@ export default function Home() {
           sm:min-h-[55vh]
           md:min-h-[60vh]
           lg:min-h-[70vh]
-          flex-col items-center justify-start     /* not centered vertically */
+          flex-col items-center justify-start
           px-4
-          pt-20 sm:pt-28 md:pt-32 lg:pt-40        /* PUSH CONTENT DOWN */
+          pt-20 sm:pt-28 md:pt-32 lg:pt-40
         "
         >
           <div className="max-w-4xl w-full mx-auto flex justify-center">
@@ -103,48 +103,85 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CONTENT BELOW HERO */}
-      <section className="flex flex-col items-center gap-4 pb-16 pt-8 bg-background w-full">
-        <div className="inline-block max-w-xl text-center justify-center">
-          <span className={title()}>Make&nbsp;</span>
-          <span className={title({ color: "violet" })}>beautiful&nbsp;</span>
-          <br />
-          <span className={title()}>
-            websites regardless of your design experience.
-          </span>
-          <div className={subtitle({ class: "mt-4" })}>
-            Beautiful, fast and modern React UI library.
+      {/* CONTENT SECTION */}
+      <section className="flex flex-col items-center gap-12 pb-16 pt-16 bg-background w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        
+        {/* PLATINUM SPONSORS SECTION - NOW ON TOP */}
+        <div className="flex flex-col gap-8 w-full bg-default-50 dark:bg-default-100/30 p-8 sm:p-12 rounded-[2.5rem]">
+          <div className="text-center">
+            <h3 className="text-tiny font-bold uppercase tracking-[0.5em] text-[#EE3124] mb-2">Powered By</h3>
+            <h2 className="text-2xl font-black italic text-default-800 ">OUR OFFICIAL PARTNERS</h2>
+          </div>
+          
+          <div className="flex flex-wrap items-center justify-center gap-12 md:gap-16">
+            {platinumSponsors.map((sponsor, idx) => (
+              <a 
+                key={idx} 
+                href={sponsor.website} 
+                target="_blank" 
+                rel="noreferrer"
+                className="transition-all duration-300 transform hover:scale-110 active:scale-95"
+              >
+                <HeroImage
+                  src={sponsor.logoUrl}
+                  alt={sponsor.name}
+                  height={60}
+                  className="max-h-[60px] w-auto max-w-[140px] object-contain"
+                  radius="none"
+                />
+              </a>
+            ))}
+          </div>
+          
+          <div className="text-center mt-4">
+            <Button 
+                variant="flat"
+                className="font-bold uppercase tracking-widest text-tiny border-b-2 border-[#EE3124] rounded-none hover:bg-default-100 transition-colors"
+                onPress={() => window.location.href = '/sponsors'}
+            >
+              View our Sponsors
+            </Button>
           </div>
         </div>
 
-        <div className="flex gap-3">
-          <Link
-            isExternal
-            className={buttonStyles({
-              color: "primary",
-              radius: "full",
-              variant: "shadow",
-            })}
-            href={"siteConfig.links.docs"} // make sure siteConfig is imported
-          >
-            Documentation
-          </Link>
-          <Link
-            isExternal
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={"siteConfig.links.github"}
-          >
-            <LinkedInIcon size={20} />
-            GitHub
-          </Link>
-        </div>
-
-        <div className="mt-8">
-          <Snippet hideCopyButton hideSymbol variant="bordered">
-            <span>
-              Get started by editing <Code color="primary">app/page.tsx</Code>
-            </span>
-          </Snippet>
+        {/* OVERVIEW SECTION - NOW BELOW */}
+        <div className="flex flex-col lg:flex-row gap-12 items-center mt-8">
+          <div className="flex-1 text-left flex flex-col gap-6">
+            <h2 className={title({ size: "lg", italic: true })}>A LEGACY OF <span className="text-[#EE3124]">EXCELLENCE</span></h2>
+            <div className="flex flex-col gap-4 text-default-600 leading-relaxed text-lg italic">
+              <p>
+                Toronto Met Baja Racing (TMBR) is a student-led engineering design team at Toronto Metropolitan University. 
+                Competing since 1983, we are the oldest design team on campus, dedicated to designing, building, and racing 
+                a high-performance off-road vehicle from the ground up every season.
+              </p>
+              <p>
+                Our mission is to bridge the gap between classroom theory and real-world implementation, 
+                preparing the next generation of engineers through hands-on fabrication, advanced simulation, and 
+                international competitions.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex-1 grid grid-cols-2 gap-4 w-full">
+            <Card className="border-none bg-default-50 dark:bg-default-100/50 shadow-none hover:bg-default-100 transition-colors">
+              <CardBody className="p-6 text-center flex flex-col items-center justify-center gap-2">
+                <span className="text-4xl font-black italic text-[#EE3124]">40+</span>
+                <span className="text-tiny font-bold uppercase tracking-widest text-default-500">Years of History</span>
+              </CardBody>
+            </Card>
+            <Card className="border-none bg-default-50 dark:bg-default-100/50 shadow-none hover:bg-default-100 transition-colors">
+              <CardBody className="p-6 text-center flex flex-col items-center justify-center gap-2">
+                <span className="text-4xl font-black italic text-[#EE3124]">75+</span>
+                <span className="text-tiny font-bold uppercase tracking-widest text-default-500">Active Members</span>
+              </CardBody>
+            </Card>
+            <Card className="border-none bg-default-50 dark:bg-default-100/50 shadow-none col-span-2 hover:bg-default-100 transition-colors">
+              <CardBody className="p-6 text-center flex flex-col items-center justify-center gap-2">
+                <span className="text-3xl font-black italic text-[#EE3124]">International</span>
+                <span className="text-tiny font-bold uppercase tracking-widest text-default-500">SAE Competitions</span>
+              </CardBody>
+            </Card>
+          </div>
         </div>
       </section>
     </main>

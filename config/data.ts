@@ -21,6 +21,8 @@ import solidcamImg from "../resources/sponsors/solidcam.webp";
 import mondayImg from "../resources/sponsors/monday.webp";
 import slabImg from "../resources/sponsors/slab.webp";
 import muesImg from "../resources/sponsors/MUES.webp";
+import ctechImg from "../resources/sponsors/CTech.svg";
+import hondaImg from "../resources/sponsors/honda.svg";
 
 import lavalImg from "../resources/LavalBaja201942.jpg";
 import carImg from "../resources/car.png";
@@ -28,6 +30,13 @@ import car2Img from "../resources/car2.png";
 import weldingImg from "../resources/welding.png";
 import workshopImg from "../resources/welding_workshop2.jpg";
 import bannerImg from "../resources/banner.png";
+
+import vehicleDynamicsSubteamImg from "../resources/vehicle_dynamics_subteam.png";
+import powertrainSubteamImg from "../resources/powertrain_subteam.png";
+import electricalSubteamImg from "../resources/electrical_subteam.png";
+import manufacturingSubteamImg from "../resources/manufacturing_subteam.png";
+import humanfactorsSubteamImg from "../resources/humanfactors_subteam.png";
+import businessSubteamImg from "../resources/business_subteam.png";
 
 export const teamMembers = [
   {
@@ -124,10 +133,22 @@ export const sponsors = [
     website: "https://www.torontomu.ca/engineering-architectural-science/",
   },
   {
+    name: "Honda",
+    tier: "Platinum",
+    logoUrl: hondaImg.src,
+    website: "https://www.honda.ca/",
+  },
+  {
+    name: "C-Tech Manufacturing",
+    tier: "Platinum",
+    logoUrl: ctechImg.src,
+    website: "https://ctechmanufacturing.com/",
+  },
+  {
     name: "CVTech-AAB",
     tier: "Gold",
     logoUrl: cvtechImg.src,
-    website: "#",
+    website: "https://umatek.com/fr",
   },
   {
     name: "Wilwood Engineering",
@@ -208,48 +229,78 @@ export const galleryImages = [
 
 export const aboutContent = {
   mission:
-    "Our mission is to create an enriching environment for students to grow, learn, and prepare for work in industry. We strive to provide unparalleled hands-on learning experiences that bridge the gap between classroom theory and real-world engineering.",
+    "Toronto Met Baja Racing exists to provide undergraduate students with a premier hands-on engineering experience. We empower our members to apply classroom knowledge to the demanding reality of off-road racing — fostering professional growth and technical excellence through the design, fabrication, and competition of 100% student-built vehicles.",
   vision:
-    "To become a top-tier competitor in the Baja SAE series, recognized not only for our vehicle's performance but also for the excellence and professionalism of our members.",
+    "To lead as a top-tier competitor in the international SAE Baja series, setting the standard for student innovation, engineering integrity, and interdisciplinary collaboration while developing the next generation of industry leaders.",
   history:
-    "Established in 1983, Toronto Met Baja Racing (formerly Ryerson Baja) is the oldest engineering design team at Toronto Metropolitan University. From a small group of enthusiasts, we have grown into a multidisciplinary team of over 75 members across 7 sub-teams. Over the decades, we have competed across North America, constantly pushing the boundaries of durability, performance, and student innovation.",
+    "Founded in 1983, Toronto Met Baja Racing (formerly Ryerson Baja) is the oldest student design team at Toronto Metropolitan University. What began as a small group of engineering enthusiasts has grown into a powerhouse of over 75 active members spanning engineering, business, and design. For over four decades, our team has pushed the boundaries of durability and performance, competing across North America and building a legacy of hands-on innovation and leadership development.",
+  challenge:
+    "Each year, our team faces the ultimate test of student engineering. SAE Baja competitions bring together over 100 universities from around the globe to evaluate 100% student-designed and built vehicles. From cost analysis and design judging to brutal 4-hour endurance races on rugged terrain, the series is a true measure of engineering skill, teamwork, and resilience.",
+};
+
+export const competitionEvents = {
+  static: [
+    { name: "Cost Evaluation", description: "Evaluating the manufacturing and fabrication costs of the vehicle." },
+    { name: "Design Judging", description: "Industry experts assess the engineering, innovation, and logic behind the vehicle design." },
+    { name: "Sales Presentation", description: "Pitching the vehicle to a panel of judges as a production-ready product." },
+  ],
+  dynamic: [
+    { name: "Acceleration", description: "A sprint to test the powertrain's raw power and traction." },
+    { name: "Maneuverability", description: "Navigating tight tight and technical obstacles." },
+    { name: "Suspension & Traction", description: "A grueling course of rocks, bumps, and logs." },
+    { name: "Endurance", description: "The ultimate test: a 4-hour race on a brutal off-road track." },
+  ]
 };
 
 export const subteams = [
   {
-    name: "Chassis",
-    description: "The backbone of the vehicle. This team designs and manufactures the steel roll cage that protects the driver.",
-    learn: ["SolidWorks FEA & Simulation", "Tube Notching & Welding", "Structural Analysis", "Jigging & Fabrication"]
+    name: "Chassis & Frame",
+    description: "Design and analyze the structural roll cage and mounting systems, ensuring safety and SAE compliance.",
+    image: workshopImg.src,
+    responsibilities: ["Structural design and CAD modeling", "FEA and impact analysis", "Mounting integration with other subsystems", "Collaboration with manufacturing for fabrication"],
+    learn: ["SolidWorks", "FEA & Structural Analysis", "Welding Basics"]
   },
   {
-    name: "Suspension",
-    description: "Responsible for connecting the car to the ground. They design the shocks, arms, and geometry to handle rough terrain.",
-    learn: ["Kinematics & Dynamics", "Shock Tuning", "Component Design", "Load Analysis and Optimization"]
+    name: "Vehicle Dynamics",
+    description: "Responsible for suspension, steering, and braking systems to optimize handling and durability.",
+    image: vehicleDynamicsSubteamImg.src,
+    responsibilities: ["Suspension geometry design", "Steering system design", "Brake system integration", "Performance tuning and testing"],
+    learn: ["Kinematics & Dynamics", "Load Analysis", "System Optimization"]
   },
   {
     name: "Powertrain",
-    description: "The heart of the car. This team deals with the engine, CVT, and custom gearbox to transfer power efficiently.",
-    learn: ["Gearbox Design", "CVT Tuning", "Engine Maintenance", "Drivetrain Design"]
+    description: "Design and integrate the drivetrain system around the spec engine, ensuring efficient power delivery.",
+    image: powertrainSubteamImg.src,
+    responsibilities: ["CVT tuning and drivetrain optimization", "Gearbox and differential integration", "Engine system packaging", "Torque and power management"],
+    learn: ["Drivetrain Design", "Engine Systems", "Mechanical Integration"]
   },
   {
     name: "Electrical",
-    description: "The nervous system. They manage the data acquisition (DAQ), sensors, wiring harness, and brake light systems.",
-    learn: ["PCB Design", "Microcontrollers (Arduino)", "Wiring & Soldering", "Safety Systems", "Data Analysis"]
+    description: "Design and implement all vehicle electronics, data acquisition, and control systems.",
+    image: electricalSubteamImg.src,
+    responsibilities: ["Wiring harness design", "Sensor and DAQ integration", "Microcontroller programming (Arduino)", "Safety systems (kill switch, lighting)"],
+    learn: ["PCB Design", "Embedded Systems", "Data Analysis"]
   },
   {
-    name: "Brakes & Controls",
-    description: "Stopping power and driver inputs. This team designs the hydraulic brake system and pedal assembly.",
-    learn: ["Hydraulic Systems", "Fluid Dynamics"]
+    name: "Manufacturing",
+    description: "Responsible for fabrication, welding, and bringing designs into physical reality.",
+    image: manufacturingSubteamImg.src,
+    responsibilities: ["Welding and fabrication", "Shop safety and organization", "Manufacturing planning", "Supporting all technical teams"],
+    learn: ["MIG Welding", "Fabrication Techniques", "Hands-on Build Experience"]
   },
   {
     name: "Human Factors",
-    description: "The Human Factors team analyzes the interaction between the vehicle and the driver, focusing on ergonomics, driver comfort, and safety. This team designs the seating, controls, and visibility to ensure optimal driver performance during the grueling race. They study and implement features that improve communication with the vehicle and reduce fatigue, ensuring the driver can focus on the task ahead with maximum efficiency and safety.",
-    learn: ["Ergonomic Design", "Quality Assurance and Testing"]
+    description: "Focuses on driver ergonomics, safety, and interaction with the vehicle.",
+    image: humanfactorsSubteamImg.src,
+    responsibilities: ["Cockpit and seating design", "Driver visibility and control layout", "Safety systems and compliance", "Dashboard and interface integration"],
+    learn: ["Ergonomic Design", "Safety Engineering", "Testing & Validation"]
   },
   {
     name: "Business & Media",
-    description: "The fuel for the team. They handle sponsorships, finances, social media, and competition logistics. They also handle the SAE Budget Presentation.",
-    learn: ["Grant Writing & Pitching", "Social Media Marketing", "Budgeting", "Project Management"]
+    description: "Handles sponsorships, branding, finances, and outreach.",
+    image: businessSubteamImg.src,
+    responsibilities: ["Sponsorship acquisition and management", "Social media and branding", "Budgeting and financial tracking", "Event and competition logistics"],
+    learn: ["Marketing", "Project Management", "Professional Communication"]
   }
 ];
 
@@ -258,3 +309,54 @@ export const eventDates = {
   "SAE South Carolina 2025": "Oct 2025",
   "Winter Baja 2026": "Jan 2026",
 };
+
+export const sponsorshipTiers = [
+  {
+    name: "Bronze",
+    price: "$250",
+    color: "secondary",
+    description: "Ideal for individual contributors and small businesses.",
+    benefits: [
+      "Small logo on the vehicle",
+      "Small logo on team website",
+      "Small logo on team apparel",
+      "Logo in annual sponsor post",
+    ]
+  },
+  {
+    name: "Silver",
+    price: "$500",
+    color: "default",
+    description: "Perfect for growing companies looking for visibility.",
+    benefits: [
+      "Medium logo on the vehicle",
+      "Medium logo on team website",
+      "Medium logo on team apparel",
+      "Featured in group posts + tagged",
+    ]
+  },
+  {
+    name: "Gold",
+    price: "$1,000",
+    color: "warning",
+    description: "Significant support for our engineering materials.",
+    benefits: [
+      "Medium logo on the vehicle",
+      "Large logo on team website",
+      "Large logo on team apparel",
+      "High-visibility posts + 1 dedicated post",
+    ]
+  },
+  {
+    name: "Platinum",
+    price: "$2,000+",
+    color: "primary",
+    description: "Official top-tier partnership with maximum reach.",
+    benefits: [
+      "Large logo on the vehicle",
+      "Top-of-website logo placement",
+      "Large logo on team apparel",
+      "Dedicated posts + recurring spotlight",
+    ]
+  }
+];

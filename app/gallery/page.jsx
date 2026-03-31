@@ -10,6 +10,7 @@ import { Spinner } from "@heroui/spinner";
 import { Modal, ModalContent, ModalBody } from "@heroui/modal";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { eventDates } from "@/config/data";
+import { fetchGalleryImages, fetchGalleryFolders, fetchFolderImages } from "@/lib/google-drive";
 
 const monthMap = {
     'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
@@ -99,8 +100,7 @@ export default function GalleryPage() {
     useEffect(() => {
         const fetchInitialImages = async () => {
             try {
-                const res = await fetch('/api/gallery');
-                const data = await res.json();
+                const data = await fetchGalleryImages();
                 if (data.images) {
                     setImages(data.images);
                     setNextPageToken(data.nextPageToken);
@@ -118,10 +118,9 @@ export default function GalleryPage() {
 
     // Fetch folders
     useEffect(() => {
-        const fetchFolders = async () => {
+        const loadFolders = async () => {
             try {
-                const res = await fetch('/api/gallery/folders');
-                const data = await res.json();
+                const data = await fetchGalleryFolders();
                 if (data.folders) {
                     // Sort folders based on manual dates (descending - newest first)
                     const sortedFolders = [...data.folders].sort((a, b) => {
@@ -138,18 +137,17 @@ export default function GalleryPage() {
             }
         };
 
-        fetchFolders();
+        loadFolders();
     }, []);
 
     // Load images for a specific folder when accordion is expanded
-    const loadFolderImages = async (folderId) => {
+    const loadFolderImagesHandler = async (folderId) => {
         // Don't reload if already loaded
         if (folderImages[folderId]) return;
 
         setLoadingFolders(prev => ({ ...prev, [folderId]: true }));
         try {
-            const res = await fetch(`/api/gallery/folder/${folderId}`);
-            const data = await res.json();
+            const data = await fetchFolderImages(folderId);
             if (data.images) {
                 // Store images AND the next page token
                 setFolderImages(prev => ({
@@ -173,8 +171,7 @@ export default function GalleryPage() {
 
         setLoadingMoreFolders(prev => ({ ...prev, [folderId]: true }));
         try {
-            const res = await fetch(`/api/gallery/folder/${folderId}?nextPageToken=${folderData.nextPageToken}`);
-            const data = await res.json();
+            const data = await fetchFolderImages(folderId, folderData.nextPageToken);
 
             if (data.images) {
                 setFolderImages(prev => ({
@@ -198,8 +195,7 @@ export default function GalleryPage() {
 
         setIsFetchingMore(true);
         try {
-            const res = await fetch(`/api/gallery?nextPageToken=${nextPageToken}`);
-            const data = await res.json();
+            const data = await fetchGalleryImages(nextPageToken);
 
             if (data.images && data.images.length > 0) {
                 setImages(prev => [...prev, ...data.images]);
@@ -337,7 +333,7 @@ export default function GalleryPage() {
     const handleSelectionChange = (keys) => {
         // keys is a Set of selected keys (folder IDs)
         keys.forEach(key => {
-            loadFolderImages(key);
+            loadFolderImagesHandler(key);
         });
     };
 
@@ -398,14 +394,15 @@ export default function GalleryPage() {
                                         title={
                                             <div className="flex items-center gap-3">
                                                 {folder.coverImage ? (
-                                                    <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-default-200">
+                                                    <div className="w-12 h-12 rounded-sm overflow-hidden flex-shrink-0">
                                                         <Image
                                                             src={folder.coverImage}
                                                             alt={folder.name}
-                                                            className="w-full h-full object-cover"
+                                                            className="w-full h-full object-cover !opacity-100"
                                                             width={48}
                                                             height={48}
                                                             referrerPolicy="no-referrer"
+                                                            onLoad={(e) => e.currentTarget.setAttribute('data-loaded', 'true')}
                                                         />
                                                     </div>
                                                 ) : (
@@ -445,18 +442,19 @@ export default function GalleryPage() {
                                                                 key={image.id}
                                                                 isPressable
                                                                 onPress={() => handleImageClick(image, idx, folder.id)}
-                                                                radius="lg"
+                                                                radius="none"
                                                                 className="border-none bg-transparent shadow-sm overflow-hidden"
                                                                 style={{ height: `${FIXED_HEIGHT}px`, width: `${cardWidth}px` }}
                                                             >
                                                                 <div className="relative w-full h-full">
                                                                     <Image
                                                                         alt={image.alt}
-                                                                        className={`h-full w-full ${image.mimeType?.includes('video') ? 'object-contain' : 'object-cover'} transition-transform duration-300 hover:scale-105`}
+                                                                        className={`h-full w-full ${image.mimeType?.includes('video') ? 'object-contain' : 'object-cover'} transition-transform duration-300 hover:scale-105 !opacity-100`}
                                                                         src={image.src}
                                                                         style={{ height: `${FIXED_HEIGHT}px`, width: `${cardWidth}px` }}
                                                                         referrerPolicy="no-referrer"
                                                                         loading="lazy"
+                                                                        onLoad={(e) => e.currentTarget.setAttribute('data-loaded', 'true')}
                                                                     />
                                                                     {image.mimeType && image.mimeType.includes('video') && (
                                                                         <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors z-10 pointer-events-none">
@@ -515,18 +513,19 @@ export default function GalleryPage() {
                                             key={image.id}
                                             isPressable
                                             onPress={() => handleImageClick(image, index, 'global')}
-                                            radius="lg"
+                                            radius="none"
                                             className="border-none bg-transparent shadow-sm overflow-hidden"
                                             style={{ height: `${FIXED_HEIGHT}px`, width: `${cardWidth}px` }}
                                         >
                                             <div className="relative w-full h-full">
                                                 <Image
                                                     alt={image.alt}
-                                                    className={`h-full w-full ${image.mimeType?.includes('video') ? 'object-contain' : 'object-cover'} transition-transform duration-300 hover:scale-105`}
+                                                    className={`h-full w-full ${image.mimeType?.includes('video') ? 'object-contain' : 'object-cover'} transition-transform duration-300 hover:scale-105 !opacity-100`}
                                                     src={image.src}
                                                     style={{ height: `${FIXED_HEIGHT}px`, width: `${cardWidth}px` }}
                                                     referrerPolicy="no-referrer"
                                                     loading="lazy"
+                                                    onLoad={(e) => e.currentTarget.setAttribute('data-loaded', 'true')}
                                                 />
                                                 {image.mimeType && image.mimeType.includes('video') && (
                                                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors z-10 pointer-events-none">
@@ -619,8 +618,9 @@ export default function GalleryPage() {
                                                 <Image
                                                     src={selectedImage.src}
                                                     alt={selectedImage.alt}
-                                                    className="max-h-[85vh] w-auto max-w-[90vw] object-contain rounded-lg shadow-2xl"
+                                                    className="max-h-[85vh] w-auto max-w-[90vw] object-contain rounded-lg shadow-2xl !opacity-100"
                                                     referrerPolicy="no-referrer"
+                                                    onLoad={(e) => e.currentTarget.setAttribute('data-loaded', 'true')}
                                                 />
                                             )}
 

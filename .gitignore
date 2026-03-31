@@ -18,6 +18,7 @@
 # misc
 .DS_Store
 *.pem
+api_output.txt
 
 # debug
 npm-debug.log*
@@ -25,6 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # vercel
@@ -34,7 +36,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# firebase
+.firebase/
+
+# lockfiles (keep package-lock.json for CI)
 pnpm-lock.yaml
 yarn.lock
-package-lock.json
 bun.lockb

@@ -13,3 +13,7 @@
     max-height: 200px;
   }
 }
+
+.clip-path-slant {
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+}

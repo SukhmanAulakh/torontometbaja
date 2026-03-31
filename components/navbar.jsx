@@ -147,7 +147,7 @@ export const Navbar = () => {
             as={Link}
             isExternal
             color="primary"
-            href={"https://117d6f55-42ba-4074-bf8f-ee72b3faa610.filesusr.com/ugd/0aae48_e4307ac78157459ba926a6fe9a025b69.pdf"}
+            href={"https://new.express.adobe.com/id/urn:aaid:sc:VA6C2:1629f2c6-2603-5879-a556-42d02b16e3d5?accept=true%3Fpreload%3Dsharesheet"}
             startContent={<Image
               src={require("./TMUBaja-PixelArt.png")}
               alt="TMU Baja Pixel Art"
