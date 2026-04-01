@@ -24,7 +24,7 @@ export const Footer = () => {
       </div>
       <div className="text-center flex flex-col gap-2">
         <p className="text-default-500 text-sm">
-          © Toronto Metropolitan University (formerly Ryerson) 2025 - Toronto, Canada
+          © Toronto Metropolitan University (formerly Ryerson) 2026 - Toronto, Canada
         </p>
       </div>
     </footer>

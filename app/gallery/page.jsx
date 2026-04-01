@@ -356,7 +356,7 @@ export default function GalleryPage() {
             {/* Spacer to push content down - matching video aspect ratio - contains scrolling overlay */}
             <div className="w-full aspect-video h-full relative pointer-events-none z-10">
                 {/* Overlay Content - Scrolling with Spacer */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/40">
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/40 px-6 text-center">
                     <h1 className={title({ class: "!text-4xl md:!text-6xl text-white drop-shadow-lg" })}>Gallery</h1>
                     <p className="mt-4 text-xl text-white/90 font-medium drop-shadow-md">
                         TMU Baja SAE's Photo and Video Gallery
