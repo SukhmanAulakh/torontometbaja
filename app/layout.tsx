@@ -5,6 +5,8 @@ import clsx from "clsx";
 
 import { Providers } from "./providers";
 
+import { GoogleAnalytics } from "@next/third-parties/google";
+
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -52,6 +54,7 @@ export default function RootLayout({
           </div>
         </Providers>
       </body>
+      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ""} />
     </html>
   );
 }
